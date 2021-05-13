@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <h5 class="my-3 border-bottom pb-2">검색할 영화 이름을 입력하세요</h5>
+    <form method="post" class="post-form my-3">
+        {% for field, errors in form.errors.items() %}
+        <div class="alert alert-danger" role="alert">
+            <strong>{{form[field].label }}</strong> : {{ ','.join(errors) }}
+        </div>
+        {% endfor %}
+
+        {{ form.csrf_token }}
+        {{ form.search.label }}
+        {{ form.search(class="form-control") }}
+<!--        {{ form.search() }}-->
+
+<!--        <div class="form-group">-->
+<!--            <label for="search">검색명</label>-->
+<!--            <input type="text" class="form-control" name="search" id="search">-->
+<!--        </div>-->
+
+        <button type="submit" class="btn btn-primary">검색하기</button>
+    </form>
+    </div>
+
+    {% if movieinfo_list %}
+    <div class="container my-3">
+        <table class="table table-hover">
+            <thead>
+            <tr class="thead-dark">
+                <th>번호</th>
+                <th>제목</th>
+                <th>이미지</th>
+                <th>평점</th>
+                <th>감독</th>
+                <th>출연배우</th>
+                <th>제작년도</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for movie in movieinfo_list %}
+                <tr>
+                    <td> {{ loop.index }}</td>
+                    <td> {{ movie.title|safe }}</td>
+                    <td><img src="{{ movie.image }}" height="100" width="100"></td>
+                    <td> {{ movie.userRating|safe }}</td>
+                    <td> {{ movie.director|safe }}</td>
+                    <td> {{ movie.actor|safe }}</td>
+                    <td> {{ movie.pubDate|safe }}</td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+
+{% endblock %}
