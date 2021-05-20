@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, url_for
+from flask import Blueprint, render_template, url_for, request, jsonify
 from pybo.models import Question, Answer, User
 from datetime import datetime
 from pybo import db
 from werkzeug.utils import redirect
+from pybo.movieapi import Mrank
+from pybo.naverapi import navermovie
 
 
 
@@ -58,3 +60,57 @@ def test():
         db.session.add(q)
     db.session.commit()
     return redirect(url_for('question._list'))
+
+@bp.route('/webhook', methods=['GET','POST'])
+def webhook():
+    print('webhook')
+    req = request.get_json()
+    print(req['queryResult']['intent']['displayName'])
+    rankdata = Mrank()
+    # print(rankdata)
+    result = ''
+    if req['queryResult']['intent']['displayName'] == 'movie ranking':
+        count = 1
+        for tmp in rankdata:
+            result = result + str(count) + '위 : ' + tmp['title'] + '\n'
+            if count == 3:
+                break
+            count += 1
+    elif req['queryResult']['intent']['displayName'] == 'movie info - title':
+        movieresult = navermovie(req['queryResult']['queryText'])
+        print(movieresult)
+        mdata = movieresult['items'][0]
+        # print(req['queryResult']['queryText'])
+        # for tmp in rankdata:
+        #     # print('aa')
+        #     if req['queryResult']['queryText'] in tmp['title']:
+        #         result += '제목 : ' + tmp['title']
+        #         result += ' 평점 : ' + tmp['star']
+        #         result += ' 장르 : ' + tmp['genre']
+        #         print(navermovie(req['queryResult']['queryText']))
+        #     # print('result: '+ result)
+        print(mdata['director'])
+        return movie_info(mdata['image'], mdata['title'], '감독: ' + mdata['director'], ' 출연진: ' + mdata['actor'])
+    return ''
+def movie_info(img, title, director, actor):
+    response_json = jsonify(
+        fulfillment_text='영화정보',
+        fulfillment_messages=[
+            {
+                "payload": {
+                    "richContent": [[
+                        {
+                            "type": "image",
+                            "rawUrl": img
+                        },
+                        {
+                            "type": "info",
+                            "title": title,
+                            "subtitle": director + actor
+                        }
+                    ]]
+                }
+            }
+        ]
+    )
+    return response_json

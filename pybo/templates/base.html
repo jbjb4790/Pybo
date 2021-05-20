@@ -33,6 +33,10 @@
             <li class="nav-item ">
                 <a class="nav-link" href="{{ url_for('movie.Movierank') }}">영화순위</a>
             </li>
+            <li class="nav-item ">
+                <a class="nav-link" href="{{ url_for('chat.Bot') }}">챗봇</a>
+            </li>
+
 
         </ul>
         {% else %}
@@ -52,11 +56,21 @@
             <li class="nav-item ">
                 <a class="nav-link" href="{{ url_for('movie.Movierank') }}">영화순위</a>
             </li>
+            <li class="nav-item ">
+                <a class="nav-link" href="{{ url_for('chat.Bot') }}">챗봇</a>
+            </li>
         </ul>
          {% endif %}
             </div>
 </nav>
 <!-- 기본 템플릿 안에 삽입될 내용 Start -->
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<df-messenger
+  intent="WELCOME"
+  chat-title="clover"
+  agent-id="26b857fe-9664-4fe0-adb2-a0d74c0dffa1"
+  language-code="ko"
+></df-messenger>
 {% block content %}
 {% endblock %}
 <!-- 기본 템플릿 안에 삽입될 내용 End -->
